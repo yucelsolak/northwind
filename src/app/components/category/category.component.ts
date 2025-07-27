@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Category } from 'src/app/models/category';
-import { CategoryResponseModel } from 'src/app/models/categoryResponseModel';
-import {HttpClient} from '@angular/common/http';
+import { CategoryService } from 'src/app/services/category.service';
+import { SlugHelper } from 'src/app/helpers/slug';
+
 @Component({
   selector: 'app-category',
   templateUrl: './category.component.html',
@@ -9,18 +10,40 @@ import {HttpClient} from '@angular/common/http';
 })
 export class CategoryComponent implements OnInit {
 
-  categories:Category[]=
-  []
-apiUrl="https://localhost:44358/api/Categories/getall";
-  constructor(private httpClient:HttpClient) { }
+  categories:Category[]=[]
+  currentCategory:Category;
+  currentCategorySlug: string;
+  dataloaded=false;
 
-  ngOnInit(): void {this.getProducts();
+  constructor(private categoryService:CategoryService) { }
+
+  ngOnInit(): void {this.getCategories();
     }
-  getProducts(){
-  this.httpClient.get<CategoryResponseModel>(this.apiUrl)
-  .subscribe((response)=>{
-    this.categories=response.data;
-  })
+
+  getCategories(){
+this.categoryService.getCategories().subscribe(response=>
+{
+  this.categories=response.data;
+  this.dataloaded=true;
+})}
+
+
+
+setCurrentCategory(category: Category) {
+  this.currentCategory=category;
   }
+
+getCurrentCategoryClass(category:Category)
+{
+  this.currentCategorySlug = SlugHelper.generateSlug(category.categoryName);
+  if(category==this.currentCategory)
+  {
+   return "list-group-item list-group-item-action active"
+  }
+else
+{return "list-group-item list-group-item-action"} 
+}
+
+
 
 }
