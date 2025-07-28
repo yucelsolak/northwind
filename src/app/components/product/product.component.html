@@ -1,5 +1,14 @@
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 <div *ngIf="dataloaded==false" class="spinner-border text-primary" role="status">
   <span class="visually-hidden">Loading...</span>
+</div>
+<div class="mb-3">
+  <label for="filterText" class="form-label">Hızlı Ürün Arama </label>
+  <input type="text" [(ngModel)]="filterText" class="form-control" id="filterText" placeholder="Arama">
+</div>
+<div *ngIf="filterText" class="alert alert-primary">
+{{filterText}} aradınız.
 </div>
 <table *ngIf="dataloaded==true" class="table">
     <thead>
@@ -8,16 +17,20 @@
         <th>Ürün Adı</th>
         <th>Category Id</th>
         <th>Ürün Fiyatı</th>
+        <th>KDV'li Fiyatı</th>
         <th>Ürün Stok</th>
+        <th></th>
         </tr>
     </thead>
 <tbody>
-        <tr *ngFor="let product of products">
+        <tr *ngFor="let product of products |filterPipe:filterText">
         <td>{{product.productId}}</td>
-        <td>{{product.productName}}</td>
+        <td>{{product.productName |titlecase}}</td>
         <td>{{product.categoryId}}</td>
         <td>{{product.unitPrice}}</td>
+        <td>{{product.unitPrice|vatAdded:18|currency:'EUR ':'code'}}</td>
         <td>{{product.unitsInStock}}</td>
+        <td><button (click)="addToCart(product)" [class]="stockControl(product)"><i class="bi bi-basket"></i> Ekle</button></td>
     </tr>
 </tbody>
 </table>
